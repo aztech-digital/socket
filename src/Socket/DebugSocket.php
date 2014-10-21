@@ -5,7 +5,6 @@ namespace Aztech\Socket\Socket;
 use Aztech\Socket\Socket as SocketInterface;
 use Aztech\Socket\Socket\SocketReader;
 use Aztech\Socket\Socket\SocketWriter;
-use Aztech\Util\Text;
 use Aztech\Socket\ByteOrder;
 
 class DebugSocket implements SocketInterface
@@ -38,7 +37,7 @@ class DebugSocket implements SocketInterface
         $read = $this->socket->getReader()->read($bytes);
 
         echo PHP_EOL . time() . ' : Socket read ' . strlen($read) . ' bytes of ' . $bytes . ' requested : ' . PHP_EOL;
-        Text::dumpHex($read);
+        self::dumpHex($read);
 
         return $read;
     }
@@ -53,6 +52,53 @@ class DebugSocket implements SocketInterface
         $this->socket->getWriter()->write($buffer);
 
         echo PHP_EOL . time() . ' : Socket wrote ' . strlen($buffer) . ' bytes : ' . PHP_EOL;
-        Text::dumpHex($buffer);
+        self::dumpHex($buffer);
+    }
+
+    public static function dumpHex($bytes, $caption = '')
+    {
+        if ($caption) {
+            echo PHP_EOL . 'HEXDUMP -- ' . $caption . PHP_EOL;
+        }
+
+        $unpacked = unpack('H*', $bytes);
+        $hexDump = reset($unpacked);
+
+        $inc = 32;
+
+        for ($i = 0; $i < strlen($hexDump); $i += $inc) {
+            $buffer  = str_pad($i / 2, 4, '0', STR_PAD_LEFT) . '-';
+            $buffer .= str_pad((($i + $inc) / 2) - 1, 4, '0', STR_PAD_LEFT);
+            $buffer .= ' [ ';
+
+            for ($j = $i; $j < $i + $inc && $j < strlen($hexDump); $j += 2) {
+                $buffer .= substr($hexDump, $j, 2);
+
+                if ($j + 2 == $i + ($inc / 2)) {
+                    $buffer .= ' ';
+                }
+
+                $buffer .= ' ';
+            }
+
+            $buffer = str_pad($buffer, 61, ' ');
+            $buffer .= '] ';
+
+            echo $buffer;
+
+            $packedHex = pack('H*', substr($hexDump, $i, $inc));
+
+            for ($j = 0; $j < strlen($packedHex); $j++) {
+                $ord = ord($packedHex[$j]);
+                if ($ord < 32 || $ord > 126) {
+                    echo '.';
+                }
+                else {
+                    echo $packedHex[$j];
+                }
+            }
+
+            echo PHP_EOL;
+        }
     }
 }

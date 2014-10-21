@@ -2,8 +2,6 @@
 
 namespace Aztech\Socket;
 
-use Aztech\Util\Text;
-
 abstract class AbstractWriter implements Writer
 {
 

@@ -2,7 +2,6 @@
 
 namespace Aztech\Socket\Buffer;
 
-use Aztech\Util\Text;
 use Aztech\Socket\AbstractWriter;
 
 class BufferWriter extends AbstractWriter

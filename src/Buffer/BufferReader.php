@@ -3,7 +3,6 @@
 namespace Aztech\Socket\Buffer;
 
 use Aztech\Socket\AbstractReader;
-use Aztech\Util\Text;
 
 class BufferReader extends AbstractReader
 {
